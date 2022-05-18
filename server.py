@@ -1,6 +1,6 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from tabulate import tabulate
-import os, platform, socket, uuid
+import os, platform, socket, uuid, signal, sys
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(('8.8.8.8', 1))
@@ -43,4 +43,10 @@ class handler(BaseHTTPRequestHandler):
 
 
 with HTTPServer(('', 80), handler) as server:
+    def handle(_signo, _stack_frame):
+        print('Shutting down...')
+        sys.exit()
+    signal.signal(signal.SIGTERM, handle)
+    signal.signal(signal.SIGINT, handle)
+
     server.serve_forever()
